@@ -34,22 +34,21 @@ describe('Asteroid', function(){
     });
 
     it('checks if its off screen', function(){
-      // results vary each run??
-      // asteroid.center.y = -70
-      // asteroid.checkPosition();
-      // assert.equal(asteroid.center.y, 529 + asteroid.radius)
-      // 
-      // asteroid.center.y = 560
-      // asteroid.checkPosition();
-      // assert.equal(asteroid.center.y, 1)
-      //
-      // asteroid.center.x = -30
-      // asteroid.checkPosition();
-      // assert.equal(asteroid.center.x, 699)
-      //
-      // asteroid.center.x = 730
-      // asteroid.checkPosition();
-      // assert.equal(asteroid.center.x, 1)
+      asteroid.center.y = -1000
+      asteroid.checkPosition();
+      assert.equal(asteroid.center.y, 529 + asteroid.radius)
+
+      asteroid.center.y = 1000
+      asteroid.checkPosition();
+      assert.equal(asteroid.center.y, 1 - asteroid.radius)
+
+      asteroid.center.x = -1000
+      asteroid.checkPosition();
+      assert.equal(asteroid.center.x, 699 + asteroid.radius)
+
+      asteroid.center.x = 1000
+      asteroid.checkPosition();
+      assert.equal(asteroid.center.x, 1 - asteroid.radius)
     })
   });
 })
