@@ -47,7 +47,7 @@ describe('Spaceship', function() {
     it('decelerates properly', function(){
       ship.speed = 1
       ship.decelerate();
-      assert.equal(ship.speed, 0.97)
+      assert.equal(ship.speed, 0.985)
     });
 
     it('stops decelerating at 0', function(){
