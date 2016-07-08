@@ -59,5 +59,23 @@ describe('Spaceship', function() {
     it('fires bullets', function(){
       assert.equal(ship.fireBullet().constructor, Bullet)
     })
+
+    it('checks checks position when exiting screen', function(){
+      ship.point.y = -30
+      ship.checkPosition();
+      assert.equal(ship.point.y, 529)
+
+      ship.point.y = 560
+      ship.checkPosition();
+      assert.equal(ship.point.y, 1)
+
+      ship.point.x = -30
+      ship.checkPosition();
+      assert.equal(ship.point.x, 699)
+
+      ship.point.x = 730
+      ship.checkPosition();
+      assert.equal(ship.point.x, 1)
+    });
   });
 })
