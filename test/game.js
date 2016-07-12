@@ -92,6 +92,83 @@ describe('Game', function(){
     // it('checks ship collision', function(){
     //   game.checkShipCollision();
     //   assert.equal(game.ship.dead, false)
+    // ReferenceError: Audio is not defined
+    // same for hitAsteroid() + bullet collision
     // })
+
+    it('breaks asteroids into pieces', function(){
+      game.asteroids = []
+      game.createAsteroid(1);
+
+      assert.equal(game.asteroidsDestroyed, 0)
+      assert.equal(game.asteroids.length, 1)
+      var asteroid = game.asteroids[0]
+
+      asteroid.radius = 120
+
+      game.explodeAsteroid(asteroid)
+
+      var asteroidChunk = game.asteroids[1]
+
+      assert.equal(game.asteroidsDestroyed, 1)
+      assert.equal(asteroidChunk.radius, 40)
+      assert.equal(game.asteroids.length, 5)
+
+      game.explodeAsteroid(asteroidChunk)
+
+      assert.equal(game.asteroidsDestroyed, 2)
+      assert.equal(game.asteroids.length, 8)
+    })
+
+    it("kills the ship", function(){
+      assert.equal(game.lives, 3);
+      assert.equal(game.dead, false);
+      game.gameOver = false
+
+      game.killShip();
+
+      assert.equal(game.lives, 2)
+      assert.equal(game.dead, true);
+
+      game.killShip();
+      game.killShip();
+
+      assert.equal(game.gameOver, true)
+    })
+
+    it('respawns the ship', function(){
+      game.ship.hidden = true
+      game.ship.invincible = false
+      game.ship.hidden = true
+      game.dead = true
+
+      game.respawnShip();
+
+      assert.equal(game.ship.invincible, true)
+      game.time = game.deadTime + 80
+
+      game.respawnShip();
+
+      assert.equal(game.ship.hidden, false)
+
+      game.time = game.deadTime + 241
+
+      game.respawnShip();
+
+      assert.equal(game.dead, false)
+      assert.equal(game.ship.invincible, false)
+      assert.equal(game.deadTime, 0)
+    })
+
+    it('calculates score on level and astroids destroyed', function(){
+      game.level = 10
+      game.asteroidsDestroyed = 10
+
+      game.score = 0
+
+      game.calculateScore();
+
+      assert.equal(game.score, 1000)
+    })
   })
 })
