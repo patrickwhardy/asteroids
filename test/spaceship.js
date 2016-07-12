@@ -33,8 +33,8 @@ describe('Spaceship', function() {
 
     it('calculates slope', function(){
       ship.calculateSlope();
-      assert.equal(ship.slope.x, 0.001779607691446472);
-      assert.equal(ship.slope.y, -19.999999920824905);
+      assert.equal(ship.slope.x, 0.0010677646148451458);
+      assert.equal(ship.slope.y, -11.999999952494932);
     });
 
     it('accelerates properly', function(){
@@ -79,10 +79,10 @@ describe('Spaceship', function() {
       assert.equal(ship.point.x, 1);
     });
 
-    it('finds rockets', function(){
-      ship.findRockets();
-      assert.equal(ship.rocketX, 0.9982203923085499);
-      assert.equal(ship.rocketY, 20.999999920824912);
+    it('finds center', function(){
+      ship.findCenter();
+      assert.equal(ship.center.x, 0.9989322353851299);
+      assert.equal(ship.center.y, 12.999999952494946);
     });
 
     it('clears bullets every 100', function(){
