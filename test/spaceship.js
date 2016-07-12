@@ -61,6 +61,7 @@ describe('Spaceship', function() {
     })
 
     it('checks checks position when exiting screen', function(){
+      ship.hidden = false
       ship.point.y = -30
       ship.checkPosition();
       assert.equal(ship.point.y, 529)
@@ -77,5 +78,65 @@ describe('Spaceship', function() {
       ship.checkPosition();
       assert.equal(ship.point.x, 1)
     });
+
+    it('finds rockets', function(){
+      ship.findRockets();
+      assert.equal(ship.rocketX, 0.9982203923085499)
+      assert.equal(ship.rocketY, 20.999999920824912)
+    })
+
+    it('clears bullets every 100', function(){
+      assert.equal(ship.bullets.length, 0)
+      for (var i = 0; i < 100; i++) {
+        ship.bullets.push(ship.fireBullet())
+      }
+      assert.equal(ship.bullets.length, 100)
+
+      ship.clearBullets();
+
+      assert.equal(ship.bullets.length, 100)
+      ship.bullets.push(ship.fireBullet())
+      ship.clearBullets();
+
+      assert.equal(ship.bullets.length, 51)
+    });
+
+    it('finds its sides', function(){
+      assert.equal(ship.rightSide.x, 356.0905443508238)
+
+      ship.accelerate()
+
+      assert.equal(ship.rightSide.x, 356.0905443508238)
+
+      ship.findSides();
+
+      assert.equal(ship.rightSide.x, 7.090544350823818)
+    });
+
+    it('calculates intertia', function(){
+      assert.equal(ship.inertiaSlope.x, 0.0017796076914501358)
+
+      ship.momentum += 3
+      assert.equal(ship.inertiaSlope.x, 0.0017796076914501358)
+      ship.inertia();
+
+      assert.equal(ship.inertiaSlope.x, -2.82416194828558358)
+    })
+
+    it('hides the ship', function(){
+      ship.hidden = false
+
+      ship.hide();
+      assert.equal(ship.hidden, true)
+      assert.equal(ship.point.x, -1000)
+    })
+
+    it('unhides the ship', function(){
+      ship.hidden = true
+
+      ship.unHide();
+      assert.equal(ship.hidden, false)
+      assert.equal(ship.point.x, 350)
+    })
   });
 })
