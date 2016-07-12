@@ -122,5 +122,21 @@ describe('Spaceship', function() {
 
       assert.equal(ship.inertiaSlope.x, -2.82416194828558358)
     })
+
+    it('hides the ship', function(){
+      ship.hidden = false
+
+      ship.hide();
+      assert.equal(ship.hidden, true)
+      assert.equal(ship.point.x, -1000)
+    })
+
+    it('unhides the ship', function(){
+      ship.hidden = true
+
+      ship.unHide();
+      assert.equal(ship.hidden, false)
+      assert.equal(ship.point.x, 350)
+    })
   });
 })
