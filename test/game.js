@@ -120,21 +120,23 @@ describe('Game', function(){
       assert.equal(game.asteroids.length, 8)
     })
 
-    // it("kills the ship", function(){
-    //   assert.equal(game.lives, 3);
-    //   assert.equal(game.dead, false);
-    //   game.gameOver = false
-    //
-    //   game.killShip();
-    //
-    //   assert.equal(game.lives, 2)
-    //   assert.equal(game.dead, true);
-    //
-    //   game.killShip();
-    //   game.killShip();
-    //
-    //   assert.equal(game.gameOver, true)
-    // })
+    it("kills the ship", function(){
+      // const Audio = new Audio("collision.wav");
+
+      assert.equal(game.lives, 3);
+      assert.equal(game.dead, false);
+      game.gameOver = false
+
+      game.killShip();
+
+      assert.equal(game.lives, 2)
+      assert.equal(game.dead, true);
+
+      game.killShip();
+      game.killShip();
+
+      assert.equal(game.gameOver, true)
+    })
 
     it('respawns the ship', function(){
       game.ship.hidden = true
