@@ -2,11 +2,11 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    main: "./lib/index.js",
+    main: "./source/scripts/index.js",
     test: "mocha!./test/index.js"
   },
   output: {
-    path: __dirname,
+    path: __dirname + '/public',
     filename: "[name].bundle.js"
   },
   module: {
@@ -18,5 +18,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['', '.js', '.json', '.scss', '.css']
-  }
+  },
+  plugins: []
 };

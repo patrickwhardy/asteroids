@@ -4,7 +4,7 @@ const Particle = require("./particle");
 function SpaceShip(x, y, context, keyboard) {
   this.orientation = 4.7123;
   this.momentum = this.orientation;
-  this.point = {x: x, y: y};
+  this.point = { x, y};
   this.findSides();
   this.speed = 0;
   this.context = context;
@@ -41,8 +41,10 @@ SpaceShip.prototype.findCenter = function(){
 };
 
 SpaceShip.prototype.decelerate = function(){
-  if (this.speed > 0) { this.speed -= 0.015 };
-  if (this.speed < 0) { this.speed = 0 };
+  // this.speed = this.speed > 0 ? (this.speed -= 0.015) : 0;
+
+  if (this.speed > 0) { this.speed -= 0.015; }
+  if (this.speed < 0) { this.speed = 0; }
 };
 
 SpaceShip.prototype.draw = function() {
@@ -83,6 +85,7 @@ SpaceShip.prototype.accelerate = function() {
 };
 
 SpaceShip.prototype.findSides = function() {
+  // have math module so you don't have to look at the math in here
   this.rightSide = {x: (this.point.x + Math.cos(this.orientation + 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation + 0.3) * 20.6155) };
   this.leftSide = {x: (this.point.x + Math.cos(this.orientation - 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation - 0.3) * 20.6155) };
 };
@@ -110,6 +113,9 @@ SpaceShip.prototype.clearBullets = function() {
 SpaceShip.prototype.thrusters = function() {
   var rightThruster = {x: (this.point.x + Math.cos(this.orientation + 0.2) * 20.6155), y: (this.point.y - Math.sin(this.orientation + 0.3) * 20.6155) };
   var leftThruster = {x: (this.point.x + Math.cos(this.orientation - 0.2) * 20.6155), y: (this.point.y - Math.sin(this.orientation - 0.3) * 20.6155) };
+
+  // move to draw() function or some sort of helper
+  // drawThruster(args);
   this.context.beginPath();
   this.context.moveTo(this.point.x + Math.cos(this.orientation) * 30, this.point.y - Math.sin(this.orientation) * 30);
   this.context.lineTo(rightThruster.x + Math.cos(this.orientation), rightThruster.y - Math.sin(this.orientation));
@@ -117,8 +123,6 @@ SpaceShip.prototype.thrusters = function() {
   this.context.closePath();
   this.context.fillStyle="white";
   this.context.fill();
-  // var thrusterAudio = new Audio("thrusters.wav");
-  // thrusterAudio.play();
 };
 
 SpaceShip.prototype.hide = function() {
@@ -146,6 +150,7 @@ SpaceShip.prototype.update = function(time) {
       this.thrusters();
     }
     if (this.speed < 4) {
+      // use let instead of var ---> const for things that aren't reassigned
       var difference = Math.abs(this.momentum - this.orientation);
       if (difference > 0.3) {
         this.speed = (1.75 / (difference + 1));
@@ -166,5 +171,9 @@ SpaceShip.prototype.update = function(time) {
     }
   }
 };
+
+// const drawThruster = () => {
+//
+// }
 
 module.exports = SpaceShip;

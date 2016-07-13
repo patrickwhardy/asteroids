@@ -1,0 +1,17 @@
+// nums.js
+export const addNums = () => {
+
+}
+export const subNums = () => {
+
+}
+export const divNums = () => {
+
+}
+export default generateNum = () => {
+
+}
+
+// calculator.js
+
+import Calculator, { addNums, divNums } from './nums';
