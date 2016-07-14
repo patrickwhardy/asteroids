@@ -22,16 +22,12 @@ function Game(context, keyboard) {
   this.alienShips = [];
   this.alienBullets = [];
   this.particles = [];
-
-  // this.createShip();
-  // this doesn't have to be on the prototype
   this.ship = this.createShip();
 }
 
 Game.prototype.createShip = function () {
   return new SpaceShip(-1000, -1000, this.context, this.keyboard);
 };
-// const createShip = () => new SpaceShip(-1000, -1000, this.context, this.keyboard);
 
 Game.prototype.createAlienShips = function() {
   if (this.level > 1 && this.time < 300) {
@@ -42,23 +38,26 @@ Game.prototype.createAlienShips = function() {
 };
 
 Game.prototype.clearBullets = function() {
-  if (this.alienBullets.length > 100) {
-    this.alienBullets.splice(0, 50);
+  if (this.alienBullets.length > 50) {
+    this.alienBullets.splice(0, 30);
   }
-  if (this.ship.bullets.length > 100) {
-    this.ship.bullets.splice(0, 50);
+  if (this.ship.bullets.length > 50) {
+    this.ship.bullets.splice(0, 30);
   }
 };
 
 Game.prototype.createAsteroid = function(level, asteroid, asteroidCount) {
+  console.log(this.asteroids.length)
   if (asteroidCount) {
     var i = 0;
     while (i < asteroidCount) {
-      this.asteroids.push(new Asteroid(this.context, {x: (asteroid.center.x + i), y: (asteroid.center.y + i)}, (asteroid.radius / 3)));
+      this.asteroids.push(new Asteroid(this.context,
+        {x: (asteroid.center.x + i), y: (asteroid.center.y + i)},
+        (asteroid.radius / 3)));
       i++;
     }
   }
-  if (this.asteroids.length -1 < level + 7) {
+  if (this.asteroids.length < level + 6) {
     this.asteroids.push(new Asteroid(this.context));
   }
 };
@@ -67,7 +66,6 @@ Game.prototype.startGame = function() {
   this.started = true;
   this.ship.unHide();
   this.dead = false;
-
   this.gameOver = false;
   this.lives = 3;
   this.asteroidsDestroyed = 0;
@@ -78,9 +76,9 @@ Game.prototype.startGame = function() {
 };
 
 Game.prototype.removeAsteroids = function() {
-  // var thisGame = this;
-  this.asteroidsToRemove.forEach((asteroidIndex) => {
-    this.asteroids.splice(asteroidIndex, 1);
+  var thisGame = this
+  this.asteroidsToRemove.forEach(function(asteroidIndex) {
+    thisGame.asteroids.splice(asteroidIndex, 1);
   });
 };
 
@@ -122,11 +120,17 @@ Game.prototype.updateBullets = function() {
   }
 };
 
-Game.prototype.update = function() {
-  this.checkTime();
-  this.createAsteroid(this.level);
+Game.prototype.renderBullets = function(bullets) {
+  if (bullets.length > 0) {
+    bullets.forEach(function(bullet){
+      bullet.draw().accelerate();
+    });
+  }
+}
 
-  // same as above, doesn't need to be on the prototype
+Game.prototype.update = function() {
+  this.updateTime();
+  this.createAsteroid(this.level);
   this.createAlienShips();
 
   this.removeAsteroids();
@@ -141,18 +145,8 @@ Game.prototype.update = function() {
   this.checkAlienCollision();
   this.checkBulletToAlienCollision();
 
-  // could be in another function?
-  if (this.alienBullets.length > 0) {
-    this.alienBullets.forEach(function(bullet){
-      bullet.draw().accelerate();
-    });
-  }
-
-  if (this.ship.bullets.length > 0) {
-    this.ship.bullets.forEach(function(bullet){
-      bullet.draw().accelerate();
-    });
-  }
+  this.renderBullets(this.alienBullets)
+  this.renderBullets(this.ship.bullets)
 
   var currentTime = this.time;
 
@@ -183,7 +177,7 @@ Game.prototype.update = function() {
 //   gameIsRunning: () => this.started && !this.gameOver
 // }
 
-Game.prototype.checkTime = function(){
+Game.prototype.updateTime = function(){
   // this.started && !this.gameOver -----> this is duplicated some places I think
   // conditions.gameIsRunning
   if (this.started && !this.gameOver) { this.time += 1 }
