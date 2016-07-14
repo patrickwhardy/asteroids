@@ -1,7 +1,7 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Bullet = require("../lib/bullet");
+const Bullet = require("../source/scripts/bullet");
 
 describe('Bullet', function(){
   context('with default attributes', function(){

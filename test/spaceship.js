@@ -1,8 +1,8 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Bullet = require("../lib/bullet");
-const SpaceShip = require('../lib/spaceship');
+const Bullet = require("../source/scripts/bullet");
+const SpaceShip = require('../source/scripts/spaceship');
 
 describe('Spaceship', function() {
   context('with default attributes', function() {
