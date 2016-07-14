@@ -91,8 +91,8 @@
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
-		module.hot.accept("!!/Users/charlesellison/turing/4module/projects/asteroids/node_modules/mocha-loader/node_modules/css-loader/index.js!/Users/charlesellison/turing/4module/projects/asteroids/node_modules/mocha/mocha.css", function() {
-			var newContent = require("!!/Users/charlesellison/turing/4module/projects/asteroids/node_modules/mocha-loader/node_modules/css-loader/index.js!/Users/charlesellison/turing/4module/projects/asteroids/node_modules/mocha/mocha.css");
+		module.hot.accept("!!/Users/patrickwhardy/Turing/4module/projects/asteroids/node_modules/mocha-loader/node_modules/css-loader/index.js!/Users/patrickwhardy/Turing/4module/projects/asteroids/node_modules/mocha/mocha.css", function() {
+			var newContent = require("!!/Users/patrickwhardy/Turing/4module/projects/asteroids/node_modules/mocha-loader/node_modules/css-loader/index.js!/Users/patrickwhardy/Turing/4module/projects/asteroids/node_modules/mocha/mocha.css");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});

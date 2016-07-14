@@ -1,7 +1,7 @@
-const Asteroid = require("./asteroid");
-const SpaceShip = require("./spaceship");
-const AlienShip = require("./alien-ship");
-const Buff = require("./buff");
+import Asteroid from "./asteroid";
+import SpaceShip from "./spaceship";
+import AlienShip from "./alien-ship";
+import Buff from "./buff";
 
 function Game(context, keyboard) {
   this.context = context;
@@ -25,6 +25,7 @@ function Game(context, keyboard) {
   this.particles = [];
   this.ship = this.createShip();
   this.buff = new Buff(this.context);
+  // this.collision = new Audio("collision.wav");
 }
 
 Game.prototype.createShip = function () {
@@ -167,12 +168,7 @@ Game.prototype.update = function() {
 
   this.updateBullets();
 
-  this.checkBulletToShipCollison();
-  this.checkShipCollision();
-  this.checkBulletCollision();
-  this.checkAlienCollision();
-  this.checkBulletToAlienCollision();
-  this.checkBuffCollision();
+  this.checkCollisions();
 
   this.renderBullets(this.alienBullets);
   this.renderBullets(this.ship.bullets);
@@ -191,6 +187,16 @@ Game.prototype.update = function() {
   });
 
   this.checkStatus();
+};
+
+Game.prototype.checkCollisions = function(){
+  this.collision = new Audio("collision.wav");
+  this.checkBulletToShipCollison();
+  this.checkShipCollision();
+  this.checkBulletCollision();
+  this.checkAlienCollision();
+  this.checkBulletToAlienCollision();
+  this.checkBuffCollision();
 };
 
 Game.prototype.checkStatus = function() {
@@ -215,22 +221,28 @@ Game.prototype.updateLevel = function(){
   }
 };
 
-Game.prototype.checkShipCollision = function(){
-  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+
+Game.prototype.checkCollision = function(penetrators, recievers){
   var thisGame = this;
-  var collision = new Audio("collision.wav");
-  this.asteroids.forEach(function(asteroid){
-    shipCoordinates.forEach(function(coordinate){
-      if ((coordinate.x > asteroid.center.x - asteroid.radius + 5) &&
-         (coordinate.x < asteroid.center.x + asteroid.radius - 5) &&
-         (coordinate.y > asteroid.center.y - asteroid.radius + 5) &&
-         (coordinate.y < asteroid.center.y + asteroid.radius - 5) &&
-         !thisGame.ship.invincible) {
-          thisGame.killShip();
-          collision.play();
+  var hit = false;
+  recievers.forEach(function(reciever){
+    penetrators.forEach(function(penetrator){
+      if ((penetrator.x > reciever.center.x - reciever.radius + 5) &&
+         (penetrator.x < reciever.center.x + reciever.radius - 5) &&
+         (penetrator.y > reciever.center.y - reciever.radius + 5) &&
+         (penetrator.y < reciever.center.y + reciever.radius - 5)) {
+          hit = true;
+          thisGame.collision.play();
       }
     });
   });
+  return hit;
+};
+Game.prototype.checkShipCollision = function(){
+  if (this.checkCollision(this.ship.coordinates, this.asteroids) &&
+  !this.ship.invincible) {
+    this.killShip();
+  }
 };
 
 Game.prototype.checkBuffCollision = function() {
@@ -356,9 +368,7 @@ Game.prototype.explodeAsteroid = function(asteroid) {
 
 Game.prototype.killShip = function(){
   if (!this.dead) {
-    var collision = new Audio("collision.wav");
     this.particles = this.particles.concat(this.ship.explode());
-    collision.play();
     this.lives -= 1;
     this.dead = true;
     this.ship.hide();

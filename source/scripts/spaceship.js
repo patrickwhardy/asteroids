@@ -1,5 +1,5 @@
-const Bullet = require("./bullet");
-const Particle = require("./particle");
+import Bullet from "./bullet";
+import Particle from "./particle";
 
 function SpaceShip(x, y, context, keyboard) {
   this.orientation = 4.7123;
@@ -85,6 +85,7 @@ SpaceShip.prototype.accelerate = function() {
 SpaceShip.prototype.findSides = function() {
   this.rightSide = {x: (this.point.x + Math.cos(this.orientation + 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation + 0.3) * 20.6155) };
   this.leftSide = {x: (this.point.x + Math.cos(this.orientation - 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation - 0.3) * 20.6155) };
+  this.coordinates = [this.point, this.rightSide, this.leftSide];
 };
 
 SpaceShip.prototype.fireBullet = function() {

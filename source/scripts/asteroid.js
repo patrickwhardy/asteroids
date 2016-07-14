@@ -1,42 +1,4 @@
-const Particle = require("./particle");
-// import Particle, { calcRadius } from './particle';
-// import Ship from './particle';
-
-// class Asteroid {
-//   constructor(context, center = {x: -50, y: -50}, radius) {
-//     this.center = center
-//     if (radius) {
-//       this.radius = radius
-//     } else {
-//       this.setRadius();
-//     }
-//     this.context = context;
-//     this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
-//     this.hits = 0
-//   }
-//
-//   setRadius() {
-//     ////
-//   }
-//
-//   setRadius() {
-//     ////
-//   }
-// }
-
-// export default Asteroid = (context, center = {x: -50, y: -50}, radius) => {
-//   this.center = center
-//   if (radius) {
-//     this.radius = radius
-//   } else {
-//     this.setRadius();
-//   }
-//   this.context = context;
-//   this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
-//   this.hits = 0
-// }
-// ----------------> no module.exports = Asteroid in this scenario
-
+import Particle from './particle';
 
 function Asteroid(context, center = {x: -50, y: -50}, radius) {
   this.center = center;

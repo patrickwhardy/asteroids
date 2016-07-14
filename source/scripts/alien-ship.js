@@ -1,5 +1,5 @@
-const Bullet = require("./bullet");
-const Particle = require("./particle");
+import Bullet from "./bullet";
+import Particle from "./particle";
 
 function AlienShip(context, opponent) {
   this.shipCenter = {x: -50, y: -50};
@@ -47,14 +47,6 @@ AlienShip.prototype.findOpponent = function(opponent) {
 
 AlienShip.prototype.setRadius = function(){
   var radius = Math.random();
-  // if (radius > 0.7) { radius = 25 }
-  // else if (radius > 0.4) { radius = 20}
-  // else { radius = 15}
-  // return radius
-
-  // there's probably a nicer way of doing this
-  // return radius.withinBounds
-
   if (radius > 0.7) {
     radius = 25;
   } else if (radius > 0.4) {

@@ -89,12 +89,29 @@ describe('Game', function(){
       assert.equal(game.level, 2);
     });
 
-    // it('checks ship collision', function(){
-    //   game.checkShipCollision();
-    //   assert.equal(game.ship.dead, false)
-    // ReferenceError: Audio is not defined
-    // same for hitAsteroid() + bullet collision
-    // })
+    xit('checks ship collision', function(){
+      // comment out Audio commands to run this test
+      game.dead = false;
+      game.asteroids = [];
+      game.createAsteroid(1);
+      var asteroid = game.asteroids[0];
+
+      assert.equal(asteroid.center.x, -50);
+      assert.equal(asteroid.center.y, -50);
+
+      game.checkShipCollision();
+      assert.equal(game.dead, false);
+
+      asteroid.center.x = game.ship.point.x;
+
+      game.checkShipCollision();
+      assert.equal(game.dead, false);
+
+      asteroid.center.y = game.ship.point.y;
+
+      game.checkShipCollision();
+      assert.equal(game.dead, true);
+    });
 
     it('breaks asteroids into pieces', function(){
       game.asteroids = [];
