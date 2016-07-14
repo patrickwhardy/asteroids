@@ -270,6 +270,7 @@ Game.prototype.checkAlienCollision = function(){
       thisGame.ship.invincible === false ) {
         thisGame.killShip();
         thisGame.hitAlien(alien, index);
+        thisGame.collision.play();
       }
     });
   });
@@ -314,6 +315,7 @@ Game.prototype.checkBulletToAlienCollision = function() {
         (bullet.center.y < alien.shipCenter.y + (alien.radius * 0.25))) {
           thisGame.ship.bullets.splice(bulletIndex, 1);
           thisGame.hitAlien(alien, alienIndex);
+          thisGame.collision.play();
         }
       });
     });
@@ -330,6 +332,7 @@ Game.prototype.checkBulletToShipCollison = function() {
     (bullet.center.y < ship.center.y + ship.radius)) {
       thisGame.alienBullets.splice(bulletIndex, 1);
       thisGame.killShip();
+      thisGame.collision.play();
     }
   });
 };

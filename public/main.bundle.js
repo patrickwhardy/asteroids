@@ -344,6 +344,7 @@
 	      if (coordinate.x > alien.shipCenter.x - alien.radius + 2 && coordinate.x < alien.shipCenter.x + alien.radius - 2 && coordinate.y > alien.shipCenter.y - alien.radius * 0.3 && coordinate.y < alien.shipCenter.y + alien.radius * 0.25 && thisGame.ship.invincible === false) {
 	        thisGame.killShip();
 	        thisGame.hitAlien(alien, index);
+	        thisGame.collision.play();
 	      }
 	    });
 	  });
@@ -382,6 +383,7 @@
 	        if (bullet.center.x > alien.shipCenter.x - alien.radius && bullet.center.x < alien.shipCenter.x + alien.radius && bullet.center.y > alien.shipCenter.y - alien.radius * 0.3 && bullet.center.y < alien.shipCenter.y + alien.radius * 0.25) {
 	          thisGame.ship.bullets.splice(bulletIndex, 1);
 	          thisGame.hitAlien(alien, alienIndex);
+	          thisGame.collision.play();
 	        }
 	      });
 	    });
@@ -395,6 +397,7 @@
 	    if (bullet.center.x > ship.center.x - ship.radius && bullet.center.x < ship.center.x + ship.radius && bullet.center.y > ship.center.y - ship.radius && bullet.center.y < ship.center.y + ship.radius) {
 	      thisGame.alienBullets.splice(bulletIndex, 1);
 	      thisGame.killShip();
+	      thisGame.collision.play();
 	    }
 	  });
 	};
