@@ -1,7 +1,7 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Game = require("../lib/game");
+const Game = require("../source/scripts/game");
 
 describe('Game', function(){
   context('it is a game', function(){

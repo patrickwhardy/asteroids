@@ -1,7 +1,7 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const Asteroid = require("../lib/asteroid");
+const Asteroid = require("../source/scripts/asteroid");
 
 describe('Asteroid', function(){
   context('with default attributes', function(){

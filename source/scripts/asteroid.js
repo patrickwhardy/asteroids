@@ -1,4 +1,42 @@
-const Particle = require("./particle")
+const Particle = require("./particle");
+// import Particle, { calcRadius } from './particle';
+// import Ship from './particle';
+
+// class Asteroid {
+//   constructor(context, center = {x: -50, y: -50}, radius) {
+//     this.center = center
+//     if (radius) {
+//       this.radius = radius
+//     } else {
+//       this.setRadius();
+//     }
+//     this.context = context;
+//     this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
+//     this.hits = 0
+//   }
+//
+//   setRadius() {
+//     ////
+//   }
+//
+//   setRadius() {
+//     ////
+//   }
+// }
+
+// export default Asteroid = (context, center = {x: -50, y: -50}, radius) => {
+//   this.center = center
+//   if (radius) {
+//     this.radius = radius
+//   } else {
+//     this.setRadius();
+//   }
+//   this.context = context;
+//   this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
+//   this.hits = 0
+// }
+// ----------------> no module.exports = Asteroid in this scenario
+
 
 function Asteroid(context, center = {x: -50, y: -50}, radius) {
   this.center = center
@@ -60,7 +98,7 @@ Asteroid.prototype.moveAsteroid = function() {
   this.center.y += this.slope.y
   return this;
 }
-
+// math module? 
 Asteroid.prototype.checkPosition = function() {
   if (this.center.y < (this.radius * -2)) { this.center.y = (529 + this.radius) }
   if (this.center.y > (530 + this.radius)) { this.center.y = (1 - this.radius) }
@@ -68,4 +106,4 @@ Asteroid.prototype.checkPosition = function() {
   if (this.center.x > (700 + this.radius)) { this.center.x = 1 - this.radius}
 }
 
-module.exports = Asteroid
+module.exports = Asteroid;

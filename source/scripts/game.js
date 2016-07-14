@@ -7,7 +7,6 @@ function Game(context, keyboard) {
   this.level = 1;
   this.asteroids = [];
   this.keyboard = keyboard;
-  this.createShip();
   this.started = false;
   this.introTime = 0;
   this.lives = 3;
@@ -23,11 +22,16 @@ function Game(context, keyboard) {
   this.alienShips = [];
   this.alienBullets = [];
   this.particles = [];
+
+  // this.createShip();
+  // this doesn't have to be on the prototype
+  this.ship = this.createShip();
 }
 
-Game.prototype.createShip = function() {
-  this.ship = new SpaceShip(-1000, -1000, this.context, this.keyboard);
+Game.prototype.createShip = function () {
+  return new SpaceShip(-1000, -1000, this.context, this.keyboard);
 };
+// const createShip = () => new SpaceShip(-1000, -1000, this.context, this.keyboard);
 
 Game.prototype.createAlienShips = function() {
   if (this.level > 1 && this.time < 300) {
@@ -73,9 +77,9 @@ Game.prototype.startGame = function() {
 };
 
 Game.prototype.removeAsteroids = function() {
-  var thisGame = this;
-  this.asteroidsToRemove.forEach(function(asteroidIndex){
-    thisGame.asteroids.splice(asteroidIndex, 1);
+  // var thisGame = this;
+  this.asteroidsToRemove.forEach((asteroidIndex) => {
+    this.asteroids.splice(asteroidIndex, 1);
   });
 };
 
@@ -91,7 +95,7 @@ Game.prototype.renderExplosion = function() {
 };
 
 Game.prototype.drawShip = function() {
-  if (this.ship.invincible === true) {
+  if (this.ship.invincible) {
     this.flashTime();
   } else {
     this.ship.draw().accelerate();
@@ -120,6 +124,8 @@ Game.prototype.updateBullets = function() {
 Game.prototype.update = function() {
   this.checkTime();
   this.createAsteroid(this.level);
+
+  // same as above, doesn't need to be on the prototype
   this.createAlienShips();
 
   this.removeAsteroids();
@@ -134,6 +140,7 @@ Game.prototype.update = function() {
   this.checkAlienCollision();
   this.checkBulletToAlienCollision();
 
+  // could be in another function?
   if (this.alienBullets.length > 0) {
     this.alienBullets.forEach(function(bullet){
       bullet.draw().accelerate();
@@ -160,19 +167,25 @@ Game.prototype.update = function() {
     alienShip.update(currentTime);
   });
 
-  if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && this.started === false) {
+  if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && !this.started) {
     this.startGame();
   }
-  if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && this.gameOver === true) {
+  if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && this.gameOver) {
     this.startGame();
   }
-  if (this.dead === true && this.gameOver === false) {
+  if (this.dead && !this.gameOver) {
     this.respawnShip();
   }
 };
 
+// const conditions = {
+//   gameIsRunning: () => this.started && !this.gameOver
+// }
+
 Game.prototype.checkTime = function(){
-  if (this.started === true && this.gameOver === false) { this.time += 1 }
+  // this.started && !this.gameOver -----> this is duplicated some places I think
+  // conditions.gameIsRunning
+  if (this.started && !this.gameOver) { this.time += 1 }
   if (this.time > 1000){
     this.time = 0;
     this.level += 1;
@@ -181,23 +194,25 @@ Game.prototype.checkTime = function(){
 
 Game.prototype.checkShipCollision = function(){
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+  // arrow functions
   var thisGame = this;
   var collision = new Audio("collision.wav");
   this.asteroids.forEach(function(asteroid){
     shipCoordinates.forEach(function(coordinate){
       if ((coordinate.x > asteroid.center.x - asteroid.radius + 5) &&
-      (coordinate.x < asteroid.center.x + asteroid.radius - 5) &&
-      (coordinate.y > asteroid.center.y - asteroid.radius + 5) &&
-      (coordinate.y < asteroid.center.y + asteroid.radius - 5) &&
-      thisGame.ship.invincible === false) {
-        thisGame.killShip();
-        collision.play();
+         (coordinate.x < asteroid.center.x + asteroid.radius - 5) &&
+         (coordinate.y > asteroid.center.y - asteroid.radius + 5) &&
+         (coordinate.y < asteroid.center.y + asteroid.radius - 5) &&
+         !thisGame.ship.invincible) {
+          thisGame.killShip();
+          collision.play();
       }
     });
   });
 };
 
 Game.prototype.checkAlienCollision = function(){
+  // have shipCoords as an attribute on the prototype
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
   var thisGame = this;
   this.alienShips.forEach(function(alien, index){
@@ -258,7 +273,7 @@ Game.prototype.checkBulletToAlienCollision = function() {
     });
   }
 };
-
+// seems to be some duplication
 Game.prototype.checkBulletToShipCollison = function() {
   var ship = this.ship;
   var thisGame = this;
@@ -306,19 +321,21 @@ Game.prototype.explodeAsteroid = function(asteroid) {
 };
 
 Game.prototype.killShip = function(){
-  var collision = new Audio("collision.wav");
-  this.particles = this.particles.concat(this.ship.explode());
-  collision.play();
-  this.lives -= 1;
-  this.dead = true;
-  this.ship.hide();
-  this.ship.orientation = 4.7123;
-  if (this.time > 759) {
-    this.time = 750;
-  }
-  this.deadTime = this.time;
-  if (this.lives === 0) {
-    this.gameOver = true;
+  if (!this.dead) {
+    var collision = new Audio("collision.wav");
+    this.particles = this.particles.concat(this.ship.explode());
+    collision.play();
+    this.lives -= 1;
+    this.dead = true;
+    this.ship.hide();
+    this.ship.orientation = 4.7123;
+    if (this.time > 759) {
+      this.time = 750;
+    }
+    this.deadTime = this.time;
+    if (this.lives === 0) {
+      this.gameOver = true;
+    }
   }
 };
 
@@ -357,7 +374,7 @@ Game.prototype.endGame = function() {
 
 Game.prototype.gameText = function() {
   this.context.textAlign = "center";
-  if (this.started === false) {
+  if (!this.started) {
     this.intro();
   }
   if (this.lives < 1){
