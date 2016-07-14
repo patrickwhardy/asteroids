@@ -46,12 +46,20 @@
 
 	"use strict";
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _game = __webpack_require__(1);
+
+	var _game2 = _interopRequireDefault(_game);
+
+	var _keyboard = __webpack_require__(8);
+
+	var _keyboard2 = _interopRequireDefault(_keyboard);
+
 	var canvas = document.getElementById("main-canvas");
 	var context = canvas.getContext("2d");
-	var Game = __webpack_require__(1);
-	var Keyboard = __webpack_require__(8);
 
-	var game = new Game(context, new Keyboard());
+	var game = new _game2["default"](context, new _keyboard2["default"]());
 
 	requestAnimationFrame(function gameLoop() {
 	  context.clearRect(0, 0, canvas.width, canvas.height);
@@ -66,10 +74,23 @@
 
 	"use strict";
 
-	var Asteroid = __webpack_require__(2);
-	var SpaceShip = __webpack_require__(4);
-	var AlienShip = __webpack_require__(6);
-	var Buff = __webpack_require__(7);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _asteroid = __webpack_require__(2);
+
+	var _asteroid2 = _interopRequireDefault(_asteroid);
+
+	var _spaceship = __webpack_require__(4);
+
+	var _spaceship2 = _interopRequireDefault(_spaceship);
+
+	var _alienShip = __webpack_require__(6);
+
+	var _alienShip2 = _interopRequireDefault(_alienShip);
+
+	var _buff = __webpack_require__(7);
+
+	var _buff2 = _interopRequireDefault(_buff);
 
 	function Game(context, keyboard) {
 	  this.context = context;
@@ -92,11 +113,12 @@
 	  this.alienBullets = [];
 	  this.particles = [];
 	  this.ship = this.createShip();
-	  this.buff = new Buff(this.context);
+	  this.buff = new _buff2["default"](this.context);
+	  // this.collision = new Audio("collision.wav");
 	}
 
 	Game.prototype.createShip = function () {
-	  return new SpaceShip(-1000, -1000, this.context, this.keyboard);
+	  return new _spaceship2["default"](-1000, -1000, this.context, this.keyboard);
 	};
 
 	Game.prototype.consumeBuff = function () {
@@ -116,7 +138,7 @@
 	Game.prototype.setBuff = function () {
 	  if (this.level % 2 === 0) {
 	    if (this.buff.consumed === true) {
-	      this.buff = new Buff(this.context);
+	      this.buff = new _buff2["default"](this.context);
 	    }
 	    if (this.time % 5 === 0) {
 	      this.buff.draw().moveBuff(this.time);
@@ -127,7 +149,7 @@
 	Game.prototype.createAlienShips = function () {
 	  if (this.level > 1 && this.time < 300) {
 	    while (this.alienShips.length < this.level / 3) {
-	      this.alienShips.push(new AlienShip(this.context, this.ship.point));
+	      this.alienShips.push(new _alienShip2["default"](this.context, this.ship.point));
 	    }
 	  }
 	};
@@ -145,12 +167,12 @@
 	  if (asteroidCount) {
 	    var i = 0;
 	    while (i < asteroidCount) {
-	      this.asteroids.push(new Asteroid(this.context, { x: asteroid.center.x + i, y: asteroid.center.y + i }, asteroid.radius / 3));
+	      this.asteroids.push(new _asteroid2["default"](this.context, { x: asteroid.center.x + i, y: asteroid.center.y + i }, asteroid.radius / 3));
 	      i++;
 	    }
 	  }
 	  if (this.asteroids.length < level + 6) {
-	    this.asteroids.push(new Asteroid(this.context));
+	    this.asteroids.push(new _asteroid2["default"](this.context));
 	  }
 	};
 
@@ -232,12 +254,7 @@
 
 	  this.updateBullets();
 
-	  this.checkBulletToShipCollison();
-	  this.checkShipCollision();
-	  this.checkBulletCollision();
-	  this.checkAlienCollision();
-	  this.checkBulletToAlienCollision();
-	  this.checkBuffCollision();
+	  this.checkCollisions();
 
 	  this.renderBullets(this.alienBullets);
 	  this.renderBullets(this.ship.bullets);
@@ -256,6 +273,16 @@
 	  });
 
 	  this.checkStatus();
+	};
+
+	Game.prototype.checkCollisions = function () {
+	  this.collision = new Audio("collision.wav");
+	  this.checkBulletToShipCollison();
+	  this.checkShipCollision();
+	  this.checkBulletCollision();
+	  this.checkAlienCollision();
+	  this.checkBulletToAlienCollision();
+	  this.checkBuffCollision();
 	};
 
 	Game.prototype.checkStatus = function () {
@@ -280,18 +307,23 @@
 	  }
 	};
 
-	Game.prototype.checkShipCollision = function () {
-	  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+	Game.prototype.checkCollision = function (penetrators, recievers) {
 	  var thisGame = this;
-	  var collision = new Audio("collision.wav");
-	  this.asteroids.forEach(function (asteroid) {
-	    shipCoordinates.forEach(function (coordinate) {
-	      if (coordinate.x > asteroid.center.x - asteroid.radius + 5 && coordinate.x < asteroid.center.x + asteroid.radius - 5 && coordinate.y > asteroid.center.y - asteroid.radius + 5 && coordinate.y < asteroid.center.y + asteroid.radius - 5 && !thisGame.ship.invincible) {
-	        thisGame.killShip();
-	        collision.play();
+	  var hit = false;
+	  recievers.forEach(function (reciever) {
+	    penetrators.forEach(function (penetrator) {
+	      if (penetrator.x > reciever.center.x - reciever.radius + 5 && penetrator.x < reciever.center.x + reciever.radius - 5 && penetrator.y > reciever.center.y - reciever.radius + 5 && penetrator.y < reciever.center.y + reciever.radius - 5) {
+	        hit = true;
+	        thisGame.collision.play();
 	      }
 	    });
 	  });
+	  return hit;
+	};
+	Game.prototype.checkShipCollision = function () {
+	  if (this.checkCollision(this.ship.coordinates, this.asteroids) && !this.ship.invincible) {
+	    this.killShip();
+	  }
 	};
 
 	Game.prototype.checkBuffCollision = function () {
@@ -312,6 +344,7 @@
 	      if (coordinate.x > alien.shipCenter.x - alien.radius + 2 && coordinate.x < alien.shipCenter.x + alien.radius - 2 && coordinate.y > alien.shipCenter.y - alien.radius * 0.3 && coordinate.y < alien.shipCenter.y + alien.radius * 0.25 && thisGame.ship.invincible === false) {
 	        thisGame.killShip();
 	        thisGame.hitAlien(alien, index);
+	        thisGame.collision.play();
 	      }
 	    });
 	  });
@@ -350,6 +383,7 @@
 	        if (bullet.center.x > alien.shipCenter.x - alien.radius && bullet.center.x < alien.shipCenter.x + alien.radius && bullet.center.y > alien.shipCenter.y - alien.radius * 0.3 && bullet.center.y < alien.shipCenter.y + alien.radius * 0.25) {
 	          thisGame.ship.bullets.splice(bulletIndex, 1);
 	          thisGame.hitAlien(alien, alienIndex);
+	          thisGame.collision.play();
 	        }
 	      });
 	    });
@@ -363,6 +397,7 @@
 	    if (bullet.center.x > ship.center.x - ship.radius && bullet.center.x < ship.center.x + ship.radius && bullet.center.y > ship.center.y - ship.radius && bullet.center.y < ship.center.y + ship.radius) {
 	      thisGame.alienBullets.splice(bulletIndex, 1);
 	      thisGame.killShip();
+	      thisGame.collision.play();
 	    }
 	  });
 	};
@@ -401,9 +436,7 @@
 
 	Game.prototype.killShip = function () {
 	  if (!this.dead) {
-	    var collision = new Audio("collision.wav");
 	    this.particles = this.particles.concat(this.ship.explode());
-	    collision.play();
 	    this.lives -= 1;
 	    this.dead = true;
 	    this.ship.hide();
@@ -494,44 +527,11 @@
 
 	"use strict";
 
-	var Particle = __webpack_require__(3);
-	// import Particle, { calcRadius } from './particle';
-	// import Ship from './particle';
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-	// class Asteroid {
-	//   constructor(context, center = {x: -50, y: -50}, radius) {
-	//     this.center = center
-	//     if (radius) {
-	//       this.radius = radius
-	//     } else {
-	//       this.setRadius();
-	//     }
-	//     this.context = context;
-	//     this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
-	//     this.hits = 0
-	//   }
-	//
-	//   setRadius() {
-	//     ////
-	//   }
-	//
-	//   setRadius() {
-	//     ////
-	//   }
-	// }
+	var _particle = __webpack_require__(3);
 
-	// export default Asteroid = (context, center = {x: -50, y: -50}, radius) => {
-	//   this.center = center
-	//   if (radius) {
-	//     this.radius = radius
-	//   } else {
-	//     this.setRadius();
-	//   }
-	//   this.context = context;
-	//   this.slope = {x: (Math.random() * 2 - 1), y: (Math.random() * 2 - 1)}
-	//   this.hits = 0
-	// }
-	// ----------------> no module.exports = Asteroid in this scenario
+	var _particle2 = _interopRequireDefault(_particle);
 
 	function Asteroid(context, center, radius) {
 	  if (center === undefined) center = { x: -50, y: -50 };
@@ -559,7 +559,7 @@
 	  var particles = [];
 	  var thisAsteroid = this;
 	  while (this.radius / 2 > i) {
-	    particles.push(new Particle({ x: thisAsteroid.center.x, y: thisAsteroid.center.y }, { x: thisAsteroid.center.x + i, y: thisAsteroid.center.y + i }, thisAsteroid.context));
+	    particles.push(new _particle2["default"]({ x: thisAsteroid.center.x, y: thisAsteroid.center.y }, { x: thisAsteroid.center.x + i, y: thisAsteroid.center.y + i }, thisAsteroid.context));
 	    i++;
 	  }
 	  return particles;
@@ -595,7 +595,7 @@
 	  this.center.y += this.slope.y;
 	  return this;
 	};
-	// math module?
+
 	Asteroid.prototype.checkPosition = function () {
 	  if (this.center.y < this.radius * -2) {
 	    this.center.y = 529 + this.radius;
@@ -655,8 +655,15 @@
 
 	"use strict";
 
-	var Bullet = __webpack_require__(5);
-	var Particle = __webpack_require__(3);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _bullet = __webpack_require__(5);
+
+	var _bullet2 = _interopRequireDefault(_bullet);
+
+	var _particle = __webpack_require__(3);
+
+	var _particle2 = _interopRequireDefault(_particle);
 
 	function SpaceShip(x, y, context, keyboard) {
 	  this.orientation = 4.7123;
@@ -680,7 +687,7 @@
 	  var particles = [];
 	  var thisShip = this;
 	  while (20 > i) {
-	    particles.push(new Particle({ x: thisShip.center.x, y: thisShip.center.y }, { x: thisShip.center.x + i, y: thisShip.center.y + i }, thisShip.context));
+	    particles.push(new _particle2["default"]({ x: thisShip.center.x, y: thisShip.center.y }, { x: thisShip.center.x + i, y: thisShip.center.y + i }, thisShip.context));
 	    i++;
 	  }
 	  return particles;
@@ -738,18 +745,18 @@
 	};
 
 	SpaceShip.prototype.findSides = function () {
-	  // have math module so you don't have to look at the math in here
 	  this.rightSide = { x: this.point.x + Math.cos(this.orientation + 0.3) * 20.6155, y: this.point.y - Math.sin(this.orientation + 0.3) * 20.6155 };
 	  this.leftSide = { x: this.point.x + Math.cos(this.orientation - 0.3) * 20.6155, y: this.point.y - Math.sin(this.orientation - 0.3) * 20.6155 };
+	  this.coordinates = [this.point, this.rightSide, this.leftSide];
 	};
 
 	SpaceShip.prototype.fireBullet = function () {
 	  this.coolDown = 7;
-	  var normalBullet = new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope }, this.context);
+	  var normalBullet = new _bullet2["default"]({ x: this.point.x, y: this.point.y, slope: this.slope }, this.context);
 	  if (this.weapon === "scatterShot") {
-	    return [normalBullet, new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x + 0.3), y: this.slope.y - Math.sin(this.slope.y + 0.3) } }, this.context), new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x - 0.3), y: this.slope.y - Math.sin(this.slope.y - 0.3) } }, this.context)];
+	    return [normalBullet, new _bullet2["default"]({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x + 0.3), y: this.slope.y - Math.sin(this.slope.y + 0.3) } }, this.context), new _bullet2["default"]({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x - 0.3), y: this.slope.y - Math.sin(this.slope.y - 0.3) } }, this.context)];
 	  } else if (this.weapon === "rearWeapon") {
-	    return [normalBullet, new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x * -1, y: this.slope.y * -1 } }, this.context)];
+	    return [normalBullet, new _bullet2["default"]({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x * -1, y: this.slope.y * -1 } }, this.context)];
 	  } else {
 	    return [normalBullet];
 	  }
@@ -759,16 +766,16 @@
 	  if (this.hidden === false) {
 	    if (this.point.y < -20) {
 	      this.point.y = 529;
-	    };
+	    }
 	    if (this.point.y > 550) {
 	      this.point.y = 1;
-	    };
+	    }
 	    if (this.point.x < -20) {
 	      this.point.x = 699;
-	    };
+	    }
 	    if (this.point.x > 720) {
 	      this.point.x = 1;
-	    };
+	    }
 	  }
 	};
 
@@ -839,10 +846,6 @@
 	  }
 	};
 
-	// const drawThruster = () => {
-	//
-	// }
-
 	module.exports = SpaceShip;
 
 /***/ },
@@ -889,8 +892,15 @@
 
 	"use strict";
 
-	var Bullet = __webpack_require__(5);
-	var Particle = __webpack_require__(3);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _bullet = __webpack_require__(5);
+
+	var _bullet2 = _interopRequireDefault(_bullet);
+
+	var _particle = __webpack_require__(3);
+
+	var _particle2 = _interopRequireDefault(_particle);
 
 	function AlienShip(context, opponent) {
 	  this.shipCenter = { x: -50, y: -50 };
@@ -913,14 +923,14 @@
 	  var particles = [];
 	  var thisAlien = this;
 	  while (this.radius / 2 > i) {
-	    particles.push(new Particle({ x: thisAlien.shipCenter.x, y: thisAlien.shipCenter.y }, { x: thisAlien.shipCenter.x + i, y: thisAlien.shipCenter.y + i }, thisAlien.context));
+	    particles.push(new _particle2["default"]({ x: thisAlien.shipCenter.x, y: thisAlien.shipCenter.y }, { x: thisAlien.shipCenter.x + i, y: thisAlien.shipCenter.y + i }, thisAlien.context));
 	    i++;
 	  }
 	  return particles;
 	};
 
 	AlienShip.prototype.fireWeapon = function (opponent) {
-	  return new Bullet({ x: this.shipCenter.x, y: this.shipCenter.y, slope: this.findOpponent(opponent) }, this.context);
+	  return new _bullet2["default"]({ x: this.shipCenter.x, y: this.shipCenter.y, slope: this.findOpponent(opponent) }, this.context);
 	};
 
 	AlienShip.prototype.findOpponent = function (opponent) {
@@ -935,14 +945,6 @@
 
 	AlienShip.prototype.setRadius = function () {
 	  var radius = Math.random();
-	  // if (radius > 0.7) { radius = 25 }
-	  // else if (radius > 0.4) { radius = 20}
-	  // else { radius = 15}
-	  // return radius
-
-	  // there's probably a nicer way of doing this
-	  // return radius.withinBounds
-
 	  if (radius > 0.7) {
 	    radius = 25;
 	  } else if (radius > 0.4) {
@@ -969,9 +971,9 @@
 	  this.context.beginPath();
 	  this.context.moveTo(this.shipCenter.x - this.radius, this.shipCenter.y);
 	  this.context.lineTo(this.shipCenter.x + this.radius, this.shipCenter.y);
-	  this.context.lineTo(this.shipCenter.x + this.radius - this.radius * 0.5, this.shipCenter.y - this.radius * .25);
-	  this.context.arc(this.shipCenter.x, this.shipCenter.y - this.radius * 0.25, this.radius * .25, 3.1, 2 * Math.PI);
-	  this.context.lineTo(this.shipCenter.x - this.radius * 0.5, this.shipCenter.y - this.radius * .25);
+	  this.context.lineTo(this.shipCenter.x + this.radius - this.radius * 0.5, this.shipCenter.y - this.radius * 0.25);
+	  this.context.arc(this.shipCenter.x, this.shipCenter.y - this.radius * 0.25, this.radius * 0.25, 3.1, 2 * Math.PI);
+	  this.context.lineTo(this.shipCenter.x - this.radius * 0.5, this.shipCenter.y - this.radius * 0.25);
 	  this.context.lineTo(this.shipCenter.x - this.radius, this.shipCenter.y);
 	  this.context.lineTo(this.shipCenter.x - this.radius * 0.625, this.shipCenter.y + this.radius * 0.25);
 	  this.context.lineTo(this.shipCenter.x + this.radius - this.radius * 0.375, this.shipCenter.y + this.radius * 0.25);
@@ -1021,10 +1023,11 @@
 	};
 
 	Buff.prototype.moveBuff = function () {
+	  var increment;
 	  if (this.speed < 0) {
-	    var increment = 5;
+	    increment = 5;
 	  } else {
-	    var increment = -5;
+	    increment = -5;
 	  }
 	  this.center.x += this.slope.x * increment;
 	  this.center.y += this.slope.y * increment;
@@ -1044,6 +1047,7 @@
 	    this.center.x = -5;
 	  }
 	};
+
 	module.exports = Buff;
 
 /***/ },
@@ -1066,17 +1070,10 @@
 	  this.isDown = function (keyCode) {
 	    return keyState[keyCode] === true;
 	  };
-	  // this.isDown = (keyCode) => {
-	  //   return keyState[keyCode] === true;
-	  // };
-
 	  this.KEYS = { LEFT: 37, RIGHT: 39, UP: 38, SPACE: 32, ENTER: 13 };
 	}
 
 	module.exports = Keyboard;
-
-	// () => {}
-	// function() {}
 
 /***/ }
 /******/ ]);

@@ -1,7 +1,7 @@
-const Asteroid = require("./asteroid");
-const SpaceShip = require("./spaceship");
-const AlienShip = require("./alien-ship");
-const Buff = require("./buff")
+import Asteroid from "./asteroid";
+import SpaceShip from "./spaceship";
+import AlienShip from "./alien-ship";
+import Buff from "./buff";
 
 function Game(context, keyboard) {
   this.context = context;
@@ -24,7 +24,8 @@ function Game(context, keyboard) {
   this.alienBullets = [];
   this.particles = [];
   this.ship = this.createShip();
-  this.buff = new Buff(this.context)
+  this.buff = new Buff(this.context);
+  // this.collision = new Audio("collision.wav");
 }
 
 Game.prototype.createShip = function () {
@@ -32,29 +33,29 @@ Game.prototype.createShip = function () {
 };
 
 Game.prototype.consumeBuff = function() {
-  this.buff.consumed = true
-  var buff = Math.random()
+  this.buff.consumed = true;
+  var buff = Math.random();
   if (buff > 0.7) {
     if (this.lives < 6) {
-      this.lives += 1
+      this.lives += 1;
     }
   } else if (buff > 0.3) {
-    this.ship.weapon = "rearWeapon"
+    this.ship.weapon = "rearWeapon";
   } else {
-    this.ship.weapon = "scatterShot"
+    this.ship.weapon = "scatterShot";
   }
-}
+};
 
 Game.prototype.setBuff = function() {
   if (this.level % 2 === 0) {
     if (this.buff.consumed === true) {
-      this.buff = new Buff(this.context)
+      this.buff = new Buff(this.context);
     }
     if (this.time % 5 === 0) {
-      this.buff.draw().moveBuff(this.time)
+      this.buff.draw().moveBuff(this.time);
     }
   }
-}
+};
 
 
 Game.prototype.createAlienShips = function() {
@@ -97,13 +98,13 @@ Game.prototype.startGame = function() {
   this.lives = 3;
   this.asteroidsDestroyed = 0;
   this.level = 1;
-  this.score = 0
+  this.score = 0;
   this.ship.speed = 0;
   this.time = 0;
 };
 
 Game.prototype.removeAsteroids = function() {
-  var thisGame = this
+  var thisGame = this;
   this.asteroidsToRemove.forEach(function(asteroidIndex) {
     thisGame.asteroids.splice(asteroidIndex, 1);
   });
@@ -153,12 +154,12 @@ Game.prototype.renderBullets = function(bullets) {
       bullet.draw().accelerate();
     });
   }
-}
+};
 
 Game.prototype.update = function() {
   this.updateLevel();
   this.createAsteroid(this.level);
-  this.setBuff()
+  this.setBuff();
   this.createAlienShips();
 
   this.removeAsteroids();
@@ -167,15 +168,10 @@ Game.prototype.update = function() {
 
   this.updateBullets();
 
-  this.checkBulletToShipCollison();
-  this.checkShipCollision();
-  this.checkBulletCollision();
-  this.checkAlienCollision();
-  this.checkBulletToAlienCollision();
-  this.checkBuffCollision()
+  this.checkCollisions();
 
-  this.renderBullets(this.alienBullets)
-  this.renderBullets(this.ship.bullets)
+  this.renderBullets(this.alienBullets);
+  this.renderBullets(this.ship.bullets);
 
   var currentTime = this.time;
 
@@ -190,7 +186,17 @@ Game.prototype.update = function() {
     alienShip.update(currentTime);
   });
 
-  this.checkStatus()
+  this.checkStatus();
+};
+
+Game.prototype.checkCollisions = function(){
+  this.collision = new Audio("collision.wav");
+  this.checkBulletToShipCollison();
+  this.checkShipCollision();
+  this.checkBulletCollision();
+  this.checkAlienCollision();
+  this.checkBulletToAlienCollision();
+  this.checkBuffCollision();
 };
 
 Game.prototype.checkStatus = function() {
@@ -203,11 +209,11 @@ Game.prototype.checkStatus = function() {
   if (this.dead && !this.gameOver) {
     this.respawnShip();
   }
-}
+};
 
 Game.prototype.updateLevel = function(){
   if (this.started && !this.gameOver) {
-    this.time += 1
+    this.time += 1;
   }
   if (this.time > 1000){
     this.time = 0;
@@ -215,22 +221,28 @@ Game.prototype.updateLevel = function(){
   }
 };
 
-Game.prototype.checkShipCollision = function(){
-  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+
+Game.prototype.checkCollision = function(penetrators, recievers){
   var thisGame = this;
-  var collision = new Audio("collision.wav");
-  this.asteroids.forEach(function(asteroid){
-    shipCoordinates.forEach(function(coordinate){
-      if ((coordinate.x > asteroid.center.x - asteroid.radius + 5) &&
-         (coordinate.x < asteroid.center.x + asteroid.radius - 5) &&
-         (coordinate.y > asteroid.center.y - asteroid.radius + 5) &&
-         (coordinate.y < asteroid.center.y + asteroid.radius - 5) &&
-         !thisGame.ship.invincible) {
-          thisGame.killShip();
-          collision.play();
+  var hit = false;
+  recievers.forEach(function(reciever){
+    penetrators.forEach(function(penetrator){
+      if ((penetrator.x > reciever.center.x - reciever.radius + 5) &&
+         (penetrator.x < reciever.center.x + reciever.radius - 5) &&
+         (penetrator.y > reciever.center.y - reciever.radius + 5) &&
+         (penetrator.y < reciever.center.y + reciever.radius - 5)) {
+          hit = true;
+          thisGame.collision.play();
       }
     });
   });
+  return hit;
+};
+Game.prototype.checkShipCollision = function(){
+  if (this.checkCollision(this.ship.coordinates, this.asteroids) &&
+  !this.ship.invincible) {
+    this.killShip();
+  }
 };
 
 Game.prototype.checkBuffCollision = function() {
@@ -241,10 +253,10 @@ Game.prototype.checkBuffCollision = function() {
          (coordinate.x < thisGame.buff.center.x + 5) &&
          (coordinate.y > thisGame.buff.center.y - 5) &&
          (coordinate.y < thisGame.buff.center.y + 5)) {
-          thisGame.consumeBuff()
+          thisGame.consumeBuff();
     }
   });
-}
+};
 
 Game.prototype.checkAlienCollision = function(){
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
@@ -258,6 +270,7 @@ Game.prototype.checkAlienCollision = function(){
       thisGame.ship.invincible === false ) {
         thisGame.killShip();
         thisGame.hitAlien(alien, index);
+        thisGame.collision.play();
       }
     });
   });
@@ -302,6 +315,7 @@ Game.prototype.checkBulletToAlienCollision = function() {
         (bullet.center.y < alien.shipCenter.y + (alien.radius * 0.25))) {
           thisGame.ship.bullets.splice(bulletIndex, 1);
           thisGame.hitAlien(alien, alienIndex);
+          thisGame.collision.play();
         }
       });
     });
@@ -318,6 +332,7 @@ Game.prototype.checkBulletToShipCollison = function() {
     (bullet.center.y < ship.center.y + ship.radius)) {
       thisGame.alienBullets.splice(bulletIndex, 1);
       thisGame.killShip();
+      thisGame.collision.play();
     }
   });
 };
@@ -356,14 +371,12 @@ Game.prototype.explodeAsteroid = function(asteroid) {
 
 Game.prototype.killShip = function(){
   if (!this.dead) {
-    var collision = new Audio("collision.wav");
     this.particles = this.particles.concat(this.ship.explode());
-    collision.play();
     this.lives -= 1;
     this.dead = true;
     this.ship.hide();
     this.ship.orientation = 4.7123;
-    this.ship.weapon = "normal"
+    this.ship.weapon = "normal";
     if (this.time > 759) {
       this.time = 750;
     }

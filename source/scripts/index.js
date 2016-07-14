@@ -1,7 +1,7 @@
 var canvas = document.getElementById("main-canvas");
 var context = canvas.getContext("2d");
-const Game = require("./game");
-const Keyboard = require("./keyboard");
+import Game from "./game";
+import Keyboard from "./keyboard";
 
 var game = new Game(context, new Keyboard());
 
