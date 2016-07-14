@@ -72,6 +72,7 @@ Game.prototype.startGame = function() {
   this.lives = 3;
   this.asteroidsDestroyed = 0;
   this.level = 1;
+  this.score = 0
   this.ship.speed = 0;
   this.time = 0;
 };
