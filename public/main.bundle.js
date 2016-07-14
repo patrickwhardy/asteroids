@@ -49,7 +49,7 @@
 	var canvas = document.getElementById("main-canvas");
 	var context = canvas.getContext("2d");
 	var Game = __webpack_require__(1);
-	var Keyboard = __webpack_require__(7);
+	var Keyboard = __webpack_require__(8);
 
 	var game = new Game(context, new Keyboard());
 
@@ -69,6 +69,7 @@
 	var Asteroid = __webpack_require__(2);
 	var SpaceShip = __webpack_require__(4);
 	var AlienShip = __webpack_require__(6);
+	var Buff = __webpack_require__(7);
 
 	function Game(context, keyboard) {
 	  this.context = context;
@@ -78,7 +79,7 @@
 	  this.started = false;
 	  this.introTime = 0;
 	  this.lives = 3;
-	  this.lifeChars = ["", "A", "A A", "A A A"];
+	  this.lifeChars = ["", "A", "A A", "A A A", "A A A A", "A A A A A", "A A A A A A"];
 	  this.dead = false;
 	  this.deadTime = 0;
 	  this.spawnTime = 0;
@@ -91,10 +92,36 @@
 	  this.alienBullets = [];
 	  this.particles = [];
 	  this.ship = this.createShip();
+	  this.buff = new Buff(this.context);
 	}
 
 	Game.prototype.createShip = function () {
 	  return new SpaceShip(-1000, -1000, this.context, this.keyboard);
+	};
+
+	Game.prototype.consumeBuff = function () {
+	  this.buff.consumed = true;
+	  var buff = Math.random();
+	  if (buff > 0.7) {
+	    if (this.lives < 6) {
+	      this.lives += 1;
+	    }
+	  } else if (buff > 0.3) {
+	    this.ship.weapon = "rearWeapon";
+	  } else {
+	    this.ship.weapon = "scatterShot";
+	  }
+	};
+
+	Game.prototype.setBuff = function () {
+	  if (this.level % 2 === 0) {
+	    if (this.buff.consumed === true) {
+	      this.buff = new Buff(this.context);
+	    }
+	    if (this.time % 5 === 0) {
+	      this.buff.draw().moveBuff(this.time);
+	    }
+	  }
 	};
 
 	Game.prototype.createAlienShips = function () {
@@ -196,6 +223,7 @@
 	Game.prototype.update = function () {
 	  this.updateLevel();
 	  this.createAsteroid(this.level);
+	  this.setBuff();
 	  this.createAlienShips();
 
 	  this.removeAsteroids();
@@ -209,6 +237,7 @@
 	  this.checkBulletCollision();
 	  this.checkAlienCollision();
 	  this.checkBulletToAlienCollision();
+	  this.checkBuffCollision();
 
 	  this.renderBullets(this.alienBullets);
 	  this.renderBullets(this.ship.bullets);
@@ -262,6 +291,16 @@
 	        collision.play();
 	      }
 	    });
+	  });
+	};
+
+	Game.prototype.checkBuffCollision = function () {
+	  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+	  var thisGame = this;
+	  shipCoordinates.forEach(function (coordinate) {
+	    if (coordinate.x > thisGame.buff.center.x - 5 && coordinate.x < thisGame.buff.center.x + 5 && coordinate.y > thisGame.buff.center.y - 5 && coordinate.y < thisGame.buff.center.y + 5) {
+	      thisGame.consumeBuff();
+	    }
 	  });
 	};
 
@@ -369,6 +408,7 @@
 	    this.dead = true;
 	    this.ship.hide();
 	    this.ship.orientation = 4.7123;
+	    this.ship.weapon = "normal";
 	    if (this.time > 759) {
 	      this.time = 750;
 	    }
@@ -632,6 +672,7 @@
 	  this.invincible = false;
 	  this.radius = 8;
 	  this.center = { x: 350, y: 313 };
+	  this.weapon = "normal";
 	}
 
 	SpaceShip.prototype.explode = function () {
@@ -704,7 +745,14 @@
 
 	SpaceShip.prototype.fireBullet = function () {
 	  this.coolDown = 7;
-	  return new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope }, this.context);
+	  var normalBullet = new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope }, this.context);
+	  if (this.weapon === "scatterShot") {
+	    return [normalBullet, new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x + 0.3), y: this.slope.y - Math.sin(this.slope.y + 0.3) } }, this.context), new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x + Math.cos(this.slope.x - 0.3), y: this.slope.y - Math.sin(this.slope.y - 0.3) } }, this.context)];
+	  } else if (this.weapon === "rearWeapon") {
+	    return [normalBullet, new Bullet({ x: this.point.x, y: this.point.y, slope: { x: this.slope.x * -1, y: this.slope.y * -1 } }, this.context)];
+	  } else {
+	    return [normalBullet];
+	  }
 	};
 
 	SpaceShip.prototype.checkPosition = function () {
@@ -782,7 +830,7 @@
 
 	  if (this.keyboard.isDown(this.keyboard.KEYS.SPACE)) {
 	    if (this.coolDown === 0) {
-	      this.bullets.push(this.fireBullet());
+	      this.bullets = this.bullets.concat(this.fireBullet());
 	      var laser = new Audio("pulse-gun.wav");
 	      laser.play();
 	    } else {
@@ -951,6 +999,55 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	function Buff(context) {
+	  this.context = context;
+	  this.center = { x: 5, y: 5 };
+	  this.slope = { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 };
+	  this.consumed = false;
+	}
+
+	Buff.prototype.draw = function () {
+	  this.checkPosition();
+	  this.context.fillStyle = "white";
+	  this.context.beginPath();
+	  this.context.arc(this.center.x, this.center.y, 10, 0, 2 * Math.PI);
+	  this.context.fill();
+	  this.speed = Math.random();
+	  return this;
+	};
+
+	Buff.prototype.moveBuff = function () {
+	  if (this.speed < 0) {
+	    var increment = 5;
+	  } else {
+	    var increment = -5;
+	  }
+	  this.center.x += this.slope.x * increment;
+	  this.center.y += this.slope.y * increment;
+	};
+
+	Buff.prototype.checkPosition = function () {
+	  if (this.center.y < -10) {
+	    this.center.y = 535;
+	  }
+	  if (this.center.y > 540) {
+	    this.center.y = -5;
+	  }
+	  if (this.center.x < -10) {
+	    this.center.x = 705;
+	  }
+	  if (this.center.x > 710) {
+	    this.center.x = -5;
+	  }
+	};
+	module.exports = Buff;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";

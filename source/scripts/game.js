@@ -1,6 +1,7 @@
 const Asteroid = require("./asteroid");
 const SpaceShip = require("./spaceship");
 const AlienShip = require("./alien-ship");
+const Buff = require("./buff")
 
 function Game(context, keyboard) {
   this.context = context;
@@ -10,7 +11,7 @@ function Game(context, keyboard) {
   this.started = false;
   this.introTime = 0;
   this.lives = 3;
-  this.lifeChars = ["", "A", "A A", "A A A"];
+  this.lifeChars = ["", "A", "A A", "A A A", "A A A A", "A A A A A", "A A A A A A"];
   this.dead = false;
   this.deadTime = 0;
   this.spawnTime = 0;
@@ -23,11 +24,38 @@ function Game(context, keyboard) {
   this.alienBullets = [];
   this.particles = [];
   this.ship = this.createShip();
+  this.buff = new Buff(this.context)
 }
 
 Game.prototype.createShip = function () {
   return new SpaceShip(-1000, -1000, this.context, this.keyboard);
 };
+
+Game.prototype.consumeBuff = function() {
+  this.buff.consumed = true
+  var buff = Math.random()
+  if (buff > 0.7) {
+    if (this.lives < 6) {
+      this.lives += 1
+    }
+  } else if (buff > 0.3) {
+    this.ship.weapon = "rearWeapon"
+  } else {
+    this.ship.weapon = "scatterShot"
+  }
+}
+
+Game.prototype.setBuff = function() {
+  if (this.level % 2 === 0) {
+    if (this.buff.consumed === true) {
+      this.buff = new Buff(this.context)
+    }
+    if (this.time % 5 === 0) {
+      this.buff.draw().moveBuff(this.time)
+    }
+  }
+}
+
 
 Game.prototype.createAlienShips = function() {
   if (this.level > 1 && this.time < 300) {
@@ -130,6 +158,7 @@ Game.prototype.renderBullets = function(bullets) {
 Game.prototype.update = function() {
   this.updateLevel();
   this.createAsteroid(this.level);
+  this.setBuff()
   this.createAlienShips();
 
   this.removeAsteroids();
@@ -143,6 +172,7 @@ Game.prototype.update = function() {
   this.checkBulletCollision();
   this.checkAlienCollision();
   this.checkBulletToAlienCollision();
+  this.checkBuffCollision()
 
   this.renderBullets(this.alienBullets)
   this.renderBullets(this.ship.bullets)
@@ -202,6 +232,19 @@ Game.prototype.checkShipCollision = function(){
     });
   });
 };
+
+Game.prototype.checkBuffCollision = function() {
+  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
+  var thisGame = this;
+    shipCoordinates.forEach(function(coordinate){
+      if ((coordinate.x > thisGame.buff.center.x - 5) &&
+         (coordinate.x < thisGame.buff.center.x + 5) &&
+         (coordinate.y > thisGame.buff.center.y - 5) &&
+         (coordinate.y < thisGame.buff.center.y + 5)) {
+          thisGame.consumeBuff()
+    }
+  });
+}
 
 Game.prototype.checkAlienCollision = function(){
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
@@ -320,6 +363,7 @@ Game.prototype.killShip = function(){
     this.dead = true;
     this.ship.hide();
     this.ship.orientation = 4.7123;
+    this.ship.weapon = "normal"
     if (this.time > 759) {
       this.time = 750;
     }
