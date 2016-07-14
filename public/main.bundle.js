@@ -272,7 +272,7 @@
 	  var collision = new Audio("collision.wav");
 	  this.asteroids.forEach(function (asteroid) {
 	    shipCoordinates.forEach(function (coordinate) {
-	      if (coordinate.x > asteroid.center.x - asteroid.radius + 5 && coordinate.x < asteroid.center.x + asteroid.radius - 5 && coordinate.y > asteroid.center.y - asteroid.radius + 5 && coordinate.y < asteroid.center.y + asteroid.radius - 5 && thisGame.ship.invincible === false) {
+	      if (coordinate.x > asteroid.center.x - asteroid.radius + 5 && coordinate.x < asteroid.center.x + asteroid.radius - 5 && coordinate.y > asteroid.center.y - asteroid.radius + 5 && coordinate.y < asteroid.center.y + asteroid.radius - 5 && !thisGame.ship.invincible) {
 	        thisGame.killShip();
 	        collision.play();
 	      }
@@ -377,19 +377,21 @@
 	};
 
 	Game.prototype.killShip = function () {
-	  var collision = new Audio("collision.wav");
-	  this.particles = this.particles.concat(this.ship.explode());
-	  collision.play();
-	  this.lives -= 1;
-	  this.dead = true;
-	  this.ship.hide();
-	  this.ship.orientation = 4.7123;
-	  if (this.time > 759) {
-	    this.time = 750;
-	  }
-	  this.deadTime = this.time;
-	  if (this.lives === 0) {
-	    this.gameOver = true;
+	  if (!this.dead) {
+	    var collision = new Audio("collision.wav");
+	    this.particles = this.particles.concat(this.ship.explode());
+	    collision.play();
+	    this.lives -= 1;
+	    this.dead = true;
+	    this.ship.hide();
+	    this.ship.orientation = 4.7123;
+	    if (this.time > 759) {
+	      this.time = 750;
+	    }
+	    this.deadTime = this.time;
+	    if (this.lives === 0) {
+	      this.gameOver = true;
+	    }
 	  }
 	};
 
