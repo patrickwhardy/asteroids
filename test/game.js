@@ -67,15 +67,15 @@ describe('Game', function(){
     it('checks game time on condition', function(){
       game.time = 0;
 
-      game.checkTime();
+      game.updateLevel();
       assert.equal(game.time, 0);
 
       game.started = true;
-      game.checkTime();
+      game.updateLevel();
       assert.equal(game.time, 1);
 
       game.gameOver = true;
-      game.checkTime();
+      game.updateLevel();
       assert.equal(game.time, 1);
     });
 
@@ -83,7 +83,7 @@ describe('Game', function(){
       game.level = 1;
       game.time = 1001;
 
-      game.checkTime();
+      game.updateLevel();
 
       assert.equal(game.time, 0);
       assert.equal(game.level, 2);
