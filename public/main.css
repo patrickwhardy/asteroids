@@ -1,6 +1,6 @@
-/*html {*/
-  /*background-color:  blac;*/
-/*}*/
+p {
+  text-align: center;
+}
 
 canvas {
   background-image: url("http://www.gunnars.com/wp-content/uploads/2014/08/Space.jpg");

@@ -1,7 +1,7 @@
 {
-  "name": "game-time-starter-kit",
+  "name": "Asteroids",
   "version": "1.0.0",
-  "description": "A starter kit for Turing School's Game Time project.",
+  "description": "A clone of the Atari game.",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/turingschool-examples/game-time-starter-kit.git"
+    "url": "https://github.com/patrickwhardy/asteroids"
   },
-  "author": "Steve Kinney",
+  "author": "Patrick Hardy and Chad Ellison",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/turingschool-examples/game-time-starter-kit/issues"
+    "url": "https://google.com"
   },
-  "homepage": "https://github.com/turingschool-examples/game-time-starter-kit",
+  "homepage": "https://github.com/patrickwhardy/asteroids",
   "devDependencies": {
     "babel": "^5.8.3",
     "babel-core": "^5.7.4",
