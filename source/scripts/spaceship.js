@@ -15,6 +15,7 @@ function SpaceShip(x, y, context, keyboard) {
   this.invincible = false;
   this.radius = 8;
   this.center = {x: 350, y: 313};
+  this.weapon = "normal"
 }
 
 SpaceShip.prototype.explode = function() {
@@ -89,7 +90,15 @@ SpaceShip.prototype.findSides = function() {
 
 SpaceShip.prototype.fireBullet = function() {
   this.coolDown = 7;
-  return new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope}, this.context);
+  var normalBullet = new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope}, this.context)
+  if (this.weapon === "scatterShot") {
+    return [normalBullet, new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x + Math.cos(this.slope.x + 0.3), y: this.slope.y - Math.sin(this.slope.y + 0.3)}}, this.context),
+            new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x + Math.cos(this.slope.x - 0.3), y: this.slope.y - Math.sin(this.slope.y - 0.3)}}, this.context)];
+  } else if (this.weapon === "rearWeapon") {
+    return [normalBullet, new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x * -1, y: this.slope.y * -1}}, this.context)]
+  } else {
+    return [normalBullet];
+  }
 };
 
 SpaceShip.prototype.checkPosition = function() {
@@ -160,7 +169,7 @@ SpaceShip.prototype.update = function(time) {
 
   if (this.keyboard.isDown(this.keyboard.KEYS.SPACE)) {
     if (this.coolDown === 0) {
-      this.bullets.push(this.fireBullet());
+      this.bullets = this.bullets.concat(this.fireBullet());
       var laser = new Audio("pulse-gun.wav");
       laser.play();
     }
