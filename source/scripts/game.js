@@ -1,7 +1,7 @@
 const Asteroid = require("./asteroid");
 const SpaceShip = require("./spaceship");
 const AlienShip = require("./alien-ship");
-const Buff = require("./buff")
+const Buff = require("./buff");
 
 function Game(context, keyboard) {
   this.context = context;
@@ -24,7 +24,7 @@ function Game(context, keyboard) {
   this.alienBullets = [];
   this.particles = [];
   this.ship = this.createShip();
-  this.buff = new Buff(this.context)
+  this.buff = new Buff(this.context);
 }
 
 Game.prototype.createShip = function () {
@@ -32,29 +32,29 @@ Game.prototype.createShip = function () {
 };
 
 Game.prototype.consumeBuff = function() {
-  this.buff.consumed = true
-  var buff = Math.random()
+  this.buff.consumed = true;
+  var buff = Math.random();
   if (buff > 0.7) {
     if (this.lives < 6) {
-      this.lives += 1
+      this.lives += 1;
     }
   } else if (buff > 0.3) {
-    this.ship.weapon = "rearWeapon"
+    this.ship.weapon = "rearWeapon";
   } else {
-    this.ship.weapon = "scatterShot"
+    this.ship.weapon = "scatterShot";
   }
-}
+};
 
 Game.prototype.setBuff = function() {
   if (this.level % 2 === 0) {
     if (this.buff.consumed === true) {
-      this.buff = new Buff(this.context)
+      this.buff = new Buff(this.context);
     }
     if (this.time % 5 === 0) {
-      this.buff.draw().moveBuff(this.time)
+      this.buff.draw().moveBuff(this.time);
     }
   }
-}
+};
 
 
 Game.prototype.createAlienShips = function() {
@@ -97,13 +97,13 @@ Game.prototype.startGame = function() {
   this.lives = 3;
   this.asteroidsDestroyed = 0;
   this.level = 1;
-  this.score = 0
+  this.score = 0;
   this.ship.speed = 0;
   this.time = 0;
 };
 
 Game.prototype.removeAsteroids = function() {
-  var thisGame = this
+  var thisGame = this;
   this.asteroidsToRemove.forEach(function(asteroidIndex) {
     thisGame.asteroids.splice(asteroidIndex, 1);
   });
@@ -153,12 +153,12 @@ Game.prototype.renderBullets = function(bullets) {
       bullet.draw().accelerate();
     });
   }
-}
+};
 
 Game.prototype.update = function() {
   this.updateLevel();
   this.createAsteroid(this.level);
-  this.setBuff()
+  this.setBuff();
   this.createAlienShips();
 
   this.removeAsteroids();
@@ -172,10 +172,10 @@ Game.prototype.update = function() {
   this.checkBulletCollision();
   this.checkAlienCollision();
   this.checkBulletToAlienCollision();
-  this.checkBuffCollision()
+  this.checkBuffCollision();
 
-  this.renderBullets(this.alienBullets)
-  this.renderBullets(this.ship.bullets)
+  this.renderBullets(this.alienBullets);
+  this.renderBullets(this.ship.bullets);
 
   var currentTime = this.time;
 
@@ -190,7 +190,7 @@ Game.prototype.update = function() {
     alienShip.update(currentTime);
   });
 
-  this.checkStatus()
+  this.checkStatus();
 };
 
 Game.prototype.checkStatus = function() {
@@ -203,11 +203,11 @@ Game.prototype.checkStatus = function() {
   if (this.dead && !this.gameOver) {
     this.respawnShip();
   }
-}
+};
 
 Game.prototype.updateLevel = function(){
   if (this.started && !this.gameOver) {
-    this.time += 1
+    this.time += 1;
   }
   if (this.time > 1000){
     this.time = 0;
@@ -241,10 +241,10 @@ Game.prototype.checkBuffCollision = function() {
          (coordinate.x < thisGame.buff.center.x + 5) &&
          (coordinate.y > thisGame.buff.center.y - 5) &&
          (coordinate.y < thisGame.buff.center.y + 5)) {
-          thisGame.consumeBuff()
+          thisGame.consumeBuff();
     }
   });
-}
+};
 
 Game.prototype.checkAlienCollision = function(){
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
@@ -363,7 +363,7 @@ Game.prototype.killShip = function(){
     this.dead = true;
     this.ship.hide();
     this.ship.orientation = 4.7123;
-    this.ship.weapon = "normal"
+    this.ship.weapon = "normal";
     if (this.time > 759) {
       this.time = 750;
     }

@@ -18,7 +18,7 @@ describe('Game', function(){
     });
 
     it('creates asteroids with random slope', function(){
-      assert.equal(game.asteroids.length, 0)
+      assert.equal(game.asteroids.length, 0);
 
       game.createAsteroid(1);
       game.createAsteroid(1);
@@ -87,7 +87,7 @@ describe('Game', function(){
 
       assert.equal(game.time, 0);
       assert.equal(game.level, 2);
-    })
+    });
 
     // it('checks ship collision', function(){
     //   game.checkShipCollision();

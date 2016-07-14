@@ -1,7 +1,7 @@
 {
   "name": "Asteroids",
   "version": "1.0.0",
-  "description": "A clone of the Atari game.",
+  "description": "A remake of the Atari game.",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",

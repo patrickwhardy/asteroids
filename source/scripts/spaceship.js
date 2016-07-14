@@ -4,7 +4,7 @@ const Particle = require("./particle");
 function SpaceShip(x, y, context, keyboard) {
   this.orientation = 4.7123;
   this.momentum = this.orientation;
-  this.point = { x, y};
+  this.point = {x, y};
   this.findSides();
   this.speed = 0;
   this.context = context;
@@ -15,21 +15,21 @@ function SpaceShip(x, y, context, keyboard) {
   this.invincible = false;
   this.radius = 8;
   this.center = {x: 350, y: 313};
-  this.weapon = "normal"
+  this.weapon = "normal";
 }
 
 SpaceShip.prototype.explode = function() {
-  var i = 0
-  var particles = []
+  var i = 0;
+  var particles = [];
   var thisShip = this;
   while (20 > i) {
     particles.push(new Particle({x: thisShip.center.x, y: thisShip.center.y},
       {x: thisShip.center.x + i, y: thisShip.center.y +i},
-      thisShip.context))
-    i++
+      thisShip.context));
+    i++;
   }
-  return particles
-}
+  return particles;
+};
 
 SpaceShip.prototype.calculateSlope = function(){
   this.findCenter();
@@ -83,19 +83,18 @@ SpaceShip.prototype.accelerate = function() {
 };
 
 SpaceShip.prototype.findSides = function() {
-  // have math module so you don't have to look at the math in here
   this.rightSide = {x: (this.point.x + Math.cos(this.orientation + 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation + 0.3) * 20.6155) };
   this.leftSide = {x: (this.point.x + Math.cos(this.orientation - 0.3) * 20.6155), y: (this.point.y - Math.sin(this.orientation - 0.3) * 20.6155) };
 };
 
 SpaceShip.prototype.fireBullet = function() {
   this.coolDown = 7;
-  var normalBullet = new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope}, this.context)
+  var normalBullet = new Bullet({ x: this.point.x, y: this.point.y, slope: this.slope}, this.context);
   if (this.weapon === "scatterShot") {
     return [normalBullet, new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x + Math.cos(this.slope.x + 0.3), y: this.slope.y - Math.sin(this.slope.y + 0.3)}}, this.context),
             new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x + Math.cos(this.slope.x - 0.3), y: this.slope.y - Math.sin(this.slope.y - 0.3)}}, this.context)];
   } else if (this.weapon === "rearWeapon") {
-    return [normalBullet, new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x * -1, y: this.slope.y * -1}}, this.context)]
+    return [normalBullet, new Bullet({x: this.point.x, y: this.point.y, slope: {x: this.slope.x * -1, y: this.slope.y * -1}}, this.context)];
   } else {
     return [normalBullet];
   }
@@ -103,10 +102,10 @@ SpaceShip.prototype.fireBullet = function() {
 
 SpaceShip.prototype.checkPosition = function() {
   if (this.hidden === false) {
-    if (this.point.y < -20) { this.point.y = 529 };
-    if (this.point.y > 550) { this.point.y = 1 };
-    if (this.point.x < -20) { this.point.x = 699 };
-    if (this.point.x > 720) { this.point.x = 1 };
+    if (this.point.y < -20) { this.point.y = 529; }
+    if (this.point.y > 550) { this.point.y = 1; }
+    if (this.point.x < -20) { this.point.x = 699; }
+    if (this.point.x > 720) { this.point.x = 1; }
   }
 };
 
@@ -144,7 +143,7 @@ SpaceShip.prototype.unHide = function() {
 
 SpaceShip.prototype.update = function(time) {
   this.clearBullets();
-  this.decelerate()
+  this.decelerate();
   if (this.keyboard.isDown(this.keyboard.KEYS.LEFT)) {
     this.orientation += 0.1;
   } else if (this.keyboard.isDown(this.keyboard.KEYS.RIGHT)) {
@@ -178,9 +177,5 @@ SpaceShip.prototype.update = function(time) {
     }
   }
 };
-
-// const drawThruster = () => {
-//
-// }
 
 module.exports = SpaceShip;
