@@ -47,7 +47,6 @@ Game.prototype.clearBullets = function() {
 };
 
 Game.prototype.createAsteroid = function(level, asteroid, asteroidCount) {
-  console.log(this.asteroids.length)
   if (asteroidCount) {
     var i = 0;
     while (i < asteroidCount) {
@@ -129,7 +128,7 @@ Game.prototype.renderBullets = function(bullets) {
 }
 
 Game.prototype.update = function() {
-  this.updateTime();
+  this.updateLevel();
   this.createAsteroid(this.level);
   this.createAlienShips();
 
@@ -152,7 +151,6 @@ Game.prototype.update = function() {
 
   this.ship.update(currentTime);
   this.drawShip();
-  this.ship.decelerate();
 
   this.asteroids.forEach(function(asteroid){
     asteroid.draw().moveAsteroid();
@@ -162,6 +160,10 @@ Game.prototype.update = function() {
     alienShip.update(currentTime);
   });
 
+  this.checkStatus()
+};
+
+Game.prototype.checkStatus = function() {
   if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && !this.started) {
     this.startGame();
   }
@@ -171,16 +173,12 @@ Game.prototype.update = function() {
   if (this.dead && !this.gameOver) {
     this.respawnShip();
   }
-};
+}
 
-// const conditions = {
-//   gameIsRunning: () => this.started && !this.gameOver
-// }
-
-Game.prototype.updateTime = function(){
-  // this.started && !this.gameOver -----> this is duplicated some places I think
-  // conditions.gameIsRunning
-  if (this.started && !this.gameOver) { this.time += 1 }
+Game.prototype.updateLevel = function(){
+  if (this.started && !this.gameOver) {
+    this.time += 1
+  }
   if (this.time > 1000){
     this.time = 0;
     this.level += 1;
@@ -189,7 +187,6 @@ Game.prototype.updateTime = function(){
 
 Game.prototype.checkShipCollision = function(){
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
-  // arrow functions
   var thisGame = this;
   var collision = new Audio("collision.wav");
   this.asteroids.forEach(function(asteroid){
@@ -207,12 +204,11 @@ Game.prototype.checkShipCollision = function(){
 };
 
 Game.prototype.checkAlienCollision = function(){
-  // have shipCoords as an attribute on the prototype
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
   var thisGame = this;
   this.alienShips.forEach(function(alien, index){
     shipCoordinates.forEach(function(coordinate){
-      if ( coordinate.x > alien.shipCenter.x - alien.radius + 2 &&
+      if (coordinate.x > alien.shipCenter.x - alien.radius + 2 &&
       coordinate.x < alien.shipCenter.x + alien.radius - 2 &&
       coordinate.y > alien.shipCenter.y - (alien.radius * 0.3) &&
       coordinate.y < alien.shipCenter.y + (alien.radius * 0.25) &&
@@ -268,7 +264,7 @@ Game.prototype.checkBulletToAlienCollision = function() {
     });
   }
 };
-// seems to be some duplication
+
 Game.prototype.checkBulletToShipCollison = function() {
   var ship = this.ship;
   var thisGame = this;

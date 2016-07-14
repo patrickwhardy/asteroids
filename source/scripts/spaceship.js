@@ -41,10 +41,7 @@ SpaceShip.prototype.findCenter = function(){
 };
 
 SpaceShip.prototype.decelerate = function(){
-  // this.speed = this.speed > 0 ? (this.speed -= 0.015) : 0;
-
-  if (this.speed > 0) { this.speed -= 0.015; }
-  if (this.speed < 0) { this.speed = 0; }
+  this.speed = this.speed > 0 ? (this.speed -= 0.015) : 0;
 };
 
 SpaceShip.prototype.draw = function() {
@@ -138,6 +135,7 @@ SpaceShip.prototype.unHide = function() {
 
 SpaceShip.prototype.update = function(time) {
   this.clearBullets();
+  this.decelerate()
   if (this.keyboard.isDown(this.keyboard.KEYS.LEFT)) {
     this.orientation += 0.1;
   } else if (this.keyboard.isDown(this.keyboard.KEYS.RIGHT)) {

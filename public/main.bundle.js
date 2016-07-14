@@ -115,7 +115,6 @@
 	};
 
 	Game.prototype.createAsteroid = function (level, asteroid, asteroidCount) {
-	  console.log(this.asteroids.length);
 	  if (asteroidCount) {
 	    var i = 0;
 	    while (i < asteroidCount) {
@@ -195,7 +194,7 @@
 	};
 
 	Game.prototype.update = function () {
-	  this.updateTime();
+	  this.updateLevel();
 	  this.createAsteroid(this.level);
 	  this.createAlienShips();
 
@@ -218,7 +217,6 @@
 
 	  this.ship.update(currentTime);
 	  this.drawShip();
-	  this.ship.decelerate();
 
 	  this.asteroids.forEach(function (asteroid) {
 	    asteroid.draw().moveAsteroid();
@@ -228,6 +226,10 @@
 	    alienShip.update(currentTime);
 	  });
 
+	  this.checkStatus();
+	};
+
+	Game.prototype.checkStatus = function () {
 	  if (this.keyboard.isDown(this.keyboard.KEYS.ENTER) && !this.started) {
 	    this.startGame();
 	  }
@@ -239,13 +241,7 @@
 	  }
 	};
 
-	// const conditions = {
-	//   gameIsRunning: () => this.started && !this.gameOver
-	// }
-
-	Game.prototype.updateTime = function () {
-	  // this.started && !this.gameOver -----> this is duplicated some places I think
-	  // conditions.gameIsRunning
+	Game.prototype.updateLevel = function () {
 	  if (this.started && !this.gameOver) {
 	    this.time += 1;
 	  }
@@ -257,7 +253,6 @@
 
 	Game.prototype.checkShipCollision = function () {
 	  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
-	  // arrow functions
 	  var thisGame = this;
 	  var collision = new Audio("collision.wav");
 	  this.asteroids.forEach(function (asteroid) {
@@ -271,7 +266,6 @@
 	};
 
 	Game.prototype.checkAlienCollision = function () {
-	  // have shipCoords as an attribute on the prototype
 	  var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
 	  var thisGame = this;
 	  this.alienShips.forEach(function (alien, index) {
@@ -322,7 +316,7 @@
 	    });
 	  }
 	};
-	// seems to be some duplication
+
 	Game.prototype.checkBulletToShipCollison = function () {
 	  var ship = this.ship;
 	  var thisGame = this;
@@ -662,14 +656,7 @@
 	};
 
 	SpaceShip.prototype.decelerate = function () {
-	  // this.speed = this.speed > 0 ? (this.speed -= 0.015) : 0;
-
-	  if (this.speed > 0) {
-	    this.speed -= 0.015;
-	  }
-	  if (this.speed < 0) {
-	    this.speed = 0;
-	  }
+	  this.speed = this.speed > 0 ? this.speed -= 0.015 : 0;
 	};
 
 	SpaceShip.prototype.draw = function () {
@@ -770,6 +757,7 @@
 
 	SpaceShip.prototype.update = function (time) {
 	  this.clearBullets();
+	  this.decelerate();
 	  if (this.keyboard.isDown(this.keyboard.KEYS.LEFT)) {
 	    this.orientation += 0.1;
 	  } else if (this.keyboard.isDown(this.keyboard.KEYS.RIGHT)) {
