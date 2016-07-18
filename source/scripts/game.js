@@ -25,7 +25,7 @@ function Game(context, keyboard) {
   this.particles = [];
   this.ship = this.createShip();
   this.buff = new Buff(this.context);
-  // this.collision = new Audio("collision.wav");
+  this.collision = new Audio("collision.wav");
 }
 
 Game.prototype.createShip = function () {
@@ -190,7 +190,6 @@ Game.prototype.update = function() {
 };
 
 Game.prototype.checkCollisions = function(){
-  this.collision = new Audio("collision.wav");
   this.checkBulletToShipCollison();
   this.checkShipCollision();
   this.checkBulletCollision();
@@ -280,8 +279,7 @@ Game.prototype.hitAsteroid = function(asteroid, index) {
   if (asteroid.hits === 3) {
     this.explodeAsteroid(asteroid);
     this.asteroidsToRemove.push(index);
-    var collision = new Audio("collision.wav");
-    collision.play();
+    this.collision.play();
   } else {
     asteroid.hits += 1;
   }
@@ -343,8 +341,7 @@ Game.prototype.hitAlien = function(alien, index) {
     this.calculateScore();
     this.aliensToRemove.push(index);
     this.particles = this.particles.concat(alien.explode());
-    var collision = new Audio("collision.wav");
-    collision.play();
+    this.collision.play();
   } else {
     alien.hits += 1;
   }
