@@ -220,16 +220,21 @@ Game.prototype.updateLevel = function(){
   }
 };
 
+Game.prototype.xCollision = function(first, second, offset, offset2) {
+  first > second - (offset + offset2) && first < second + (offset - offset2) 
+}
+
+Game.prototype.yCollision = function(fist, second, offset, offset2) {
+  first > second - (offset + offset2) && first < second + (offset - offset2)
+}
 
 Game.prototype.checkCollision = function(penetrators, recievers){
   var thisGame = this;
   var hit = false;
   recievers.forEach(function(reciever){
     penetrators.forEach(function(penetrator){
-      if ((penetrator.x > reciever.center.x - reciever.radius + 5) &&
-         (penetrator.x < reciever.center.x + reciever.radius - 5) &&
-         (penetrator.y > reciever.center.y - reciever.radius + 5) &&
-         (penetrator.y < reciever.center.y + reciever.radius - 5)) {
+      if (xCollision(penetrator.x, receiver.center.x, receiver.radius, 5) && 
+          yCollision(penetrator.y, receiver.center.y, receiver.radius, 5)) {
           hit = true;
           thisGame.collision.play();
       }
@@ -248,10 +253,8 @@ Game.prototype.checkBuffCollision = function() {
   var shipCoordinates = [this.ship.point, this.ship.rightSide, this.ship.leftSide];
   var thisGame = this;
     shipCoordinates.forEach(function(coordinate){
-      if ((coordinate.x > thisGame.buff.center.x - 5) &&
-         (coordinate.x < thisGame.buff.center.x + 5) &&
-         (coordinate.y > thisGame.buff.center.y - 5) &&
-         (coordinate.y < thisGame.buff.center.y + 5)) {
+      if (xCollision(coordinate.x, thisGame.buff.center.x, 5) && 
+          yCollision(coordinate.y, thisGame.buff.center.y, 5)) {
           thisGame.consumeBuff();
     }
   });
@@ -262,11 +265,9 @@ Game.prototype.checkAlienCollision = function(){
   var thisGame = this;
   this.alienShips.forEach(function(alien, index){
     shipCoordinates.forEach(function(coordinate){
-      if (coordinate.x > alien.shipCenter.x - alien.radius + 2 &&
-      coordinate.x < alien.shipCenter.x + alien.radius - 2 &&
-      coordinate.y > alien.shipCenter.y - (alien.radius * 0.3) &&
-      coordinate.y < alien.shipCenter.y + (alien.radius * 0.25) &&
-      thisGame.ship.invincible === false ) {
+      if (xCollision(coordinate.x, alien.shipCenter.x, alien.radius, 2) && 
+          yCollision(coordinate.y, alien.shipCenter.y, (alien.radius * .3)) &&
+          thisGame.ship.invincible === false ) {
         thisGame.killShip();
         thisGame.hitAlien(alien, index);
         thisGame.collision.play();
@@ -290,10 +291,8 @@ Game.prototype.checkBulletCollision = function() {
   if (thisGame.ship.bullets.length > 0) {
     thisGame.ship.bullets.forEach(function(bullet, bulletIndex){
       thisGame.asteroids.forEach(function(asteroid, asteroidIndex){
-        if ((bullet.center.x > asteroid.center.x - asteroid.radius + 5) &&
-        (bullet.center.x < asteroid.center.x + asteroid.radius - 5) &&
-        (bullet.center.y > asteroid.center.y - asteroid.radius + 5) &&
-        (bullet.center.y < asteroid.center.y + asteroid.radius - 5)) {
+        if (xCollision(bullet.center.x, asteroid.center.x, asteroid.radius, 5) && 
+          yCollision(bullet.center.y, asteroid.center.y, asteroid.radius,  5)) {
           thisGame.ship.bullets.splice(bulletIndex, 1);
           thisGame.hitAsteroid(asteroid, asteroidIndex);
         }
@@ -307,10 +306,8 @@ Game.prototype.checkBulletToAlienCollision = function() {
   if (thisGame.ship.bullets.length > 0) {
     thisGame.ship.bullets.forEach(function(bullet, bulletIndex){
       thisGame.alienShips.forEach(function(alien, alienIndex){
-        if ((bullet.center.x > alien.shipCenter.x - alien.radius) &&
-        (bullet.center.x < alien.shipCenter.x + alien.radius) &&
-        (bullet.center.y > alien.shipCenter.y - (alien.radius * 0.3)) &&
-        (bullet.center.y < alien.shipCenter.y + (alien.radius * 0.25))) {
+        if (xCollision(bullet.center.x, alien.shipCenter.x, alien.radius) && 
+          yCollision(bullet.center.y, alien.shipCenter.y, alien.radius, .3)) {
           thisGame.ship.bullets.splice(bulletIndex, 1);
           thisGame.hitAlien(alien, alienIndex);
           thisGame.collision.play();
@@ -324,10 +321,8 @@ Game.prototype.checkBulletToShipCollison = function() {
   var ship = this.ship;
   var thisGame = this;
   this.alienBullets.forEach(function(bullet, bulletIndex){
-    if ((bullet.center.x > ship.center.x - ship.radius) &&
-    (bullet.center.x < ship.center.x + ship.radius) &&
-    (bullet.center.y > ship.center.y - ship.radius) &&
-    (bullet.center.y < ship.center.y + ship.radius)) {
+    if (xCollision(bullet.center.x, ship.center.x, ship.radius) && 
+          yCollision(bullet.center.y, ship.center.y, ship.radius)) {
       thisGame.alienBullets.splice(bulletIndex, 1);
       thisGame.killShip();
       thisGame.collision.play();
